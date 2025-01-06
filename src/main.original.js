@@ -7,6 +7,7 @@ var lastSel,
   bonusPts = 0,
   totalAmt = 0,
   itemCnt = 0;
+
 function main() {
   const root = document.getElementById("app");
   let cont = document.createElement("div");
@@ -44,7 +45,7 @@ function main() {
   calcCart();
   setTimeout(function () {
     setInterval(function () {
-      var luckyItem =
+      const luckyItem =
         productList[Math.floor(Math.random() * productList.length)];
       if (Math.random() < 0.3 && luckyItem.q > 0) {
         luckyItem.val = Math.round(luckyItem.val * 0.8);
@@ -56,7 +57,7 @@ function main() {
   setTimeout(function () {
     setInterval(function () {
       if (lastSel) {
-        var suggest = productList.find(function (item) {
+        const suggest = productList.find(function (item) {
           return item.id !== lastSel && item.q > 0;
         });
         if (suggest) {
@@ -68,38 +69,39 @@ function main() {
     }, 60000);
   }, Math.random() * 20000);
 }
+
 function updateSelOpts() {
   sel.innerHTML = "";
   productList.forEach(function (item) {
-    var opt = document.createElement("option");
-    opt.value = item.id;
-    opt.textContent =
+    const option = document.createElement("option");
+    option.value = item.id;
+    option.textContent =
       item.name + ` ${SYMBOL.HYPHEN_MINUS} ` + item.val + MESSAGES.WON;
-    if (item.q === 0) opt.disabled = true;
-    sel.appendChild(opt);
+    if (item.q === 0) option.disabled = true;
+    sel.appendChild(option);
   });
 }
 function calcCart() {
   totalAmt = 0;
   itemCnt = 0;
-  var cartItems = cartDisp.children;
-  var subTot = 0;
-  for (var i = 0; i < cartItems.length; i++) {
+  const cartItems = cartDisp.children;
+  let subTot = 0;
+  for (let i = 0; i < cartItems.length; i++) {
     (function () {
-      var curItem;
-      for (var j = 0; j < productList.length; j++) {
+      let curItem;
+      for (let j = 0; j < productList.length; j++) {
         if (productList[j].id === cartItems[i].id) {
           curItem = productList[j];
           break;
         }
       }
-      var q = parseInt(
+      const q = parseInt(
         cartItems[i].querySelector("span").textContent.split("x ")[1]
       );
-      var itemTot = curItem.val * q;
-      var disc = 0;
+      const itemTotal = curItem.val * q;
+      let disc = 0;
       itemCnt += q;
-      subTot += itemTot;
+      subTot += itemTotal;
       if (q >= 10) {
         if (curItem.id === "p1") disc = 0.1;
         else if (curItem.id === "p2") disc = 0.15;
@@ -107,7 +109,7 @@ function calcCart() {
         else if (curItem.id === "p4") disc = 0.05;
         else if (curItem.id === "p5") disc = 0.25;
       }
-      totalAmt += itemTot * (1 - disc);
+      totalAmt += itemTotal * (1 - disc);
     })();
   }
   let discRate = 0;
@@ -142,52 +144,52 @@ function calcCart() {
 }
 const renderBonusPts = () => {
   bonusPts = Math.floor(totalAmt / NUMBERS.THOUSAND);
-  var ptsTag = document.getElementById("loyalty-points");
-  if (!ptsTag) {
-    ptsTag = document.createElement("span");
-    ptsTag.id = "loyalty-points";
-    ptsTag.className = "text-blue-500 ml-2";
-    sum.appendChild(ptsTag);
+  let pointsTag = document.getElementById("loyalty-points");
+  if (!pointsTag) {
+    pointsTag = document.createElement("span");
+    pointsTag.id = "loyalty-points";
+    pointsTag.className = "text-blue-500 ml-2";
+    sum.appendChild(pointsTag);
   }
-  ptsTag.textContent = MESSAGES.BONUS_POINT(bonusPts);
+  pointsTag.textContent = MESSAGES.BONUS_POINT(bonusPts);
 };
 function updateStockInfo() {
-  var infoMsg = "";
+  let infoMessage = "";
   productList.forEach(function (item) {
     if (item.q < 5) {
-      infoMsg +=
+      infoMessage +=
         item.name +
         ": " +
         (item.q > 0 ? MESSAGES.STOCK_INFO(item.q) : MESSAGES.SOLD_OUT) +
         "\n";
     }
   });
-  stockInfo.textContent = infoMsg;
+  stockInfo.textContent = infoMessage;
 }
 main();
 addBtn.addEventListener("click", function () {
-  var selItem = sel.value;
-  var itemToAdd = productList.find(function (p) {
-    return p.id === selItem;
+  const selectItem = sel.value;
+  const itemToAdd = productList.find(function (p) {
+    return p.id === selectItem;
   });
   if (itemToAdd && itemToAdd.q > 0) {
-    var item = document.getElementById(itemToAdd.id);
+    const item = document.getElementById(itemToAdd.id);
     if (item) {
-      var newQty =
+      const newQuantity =
         parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
-      if (newQty <= itemToAdd.q) {
+      if (newQuantity <= itemToAdd.q) {
         item.querySelector("span").textContent =
           itemToAdd.name +
           ` ${SYMBOL.HYPHEN_MINUS} ` +
           itemToAdd.val +
           "원 x " +
-          newQty;
+          newQuantity;
         itemToAdd.q--;
       } else {
         alert(MESSAGES.OUT_STOCK);
       }
     } else {
-      var newItem = document.createElement("div");
+      const newItem = document.createElement("div");
       newItem.id = itemToAdd.id;
       newItem.className = "flex justify-between items-center mb-2";
       newItem.innerHTML =
@@ -209,48 +211,50 @@ addBtn.addEventListener("click", function () {
       itemToAdd.q--;
     }
     calcCart();
-    lastSel = selItem;
+    lastSel = selectItem;
   }
 });
 cartDisp.addEventListener("click", function (event) {
-  var tgt = event.target;
+  const target = event.target;
   if (
-    tgt.classList.contains("quantity-change") ||
-    tgt.classList.contains("remove-item")
+    target.classList.contains("quantity-change") ||
+    target.classList.contains("remove-item")
   ) {
-    var prodId = tgt.dataset.productId;
-    var itemElem = document.getElementById(prodId);
-    var prod = productList.find(function (p) {
-      return p.id === prodId;
+    const productId = target.dataset.productId;
+    const itemElement = document.getElementById(productId);
+    const product = productList.find(function (p) {
+      return p.id === productId;
     });
-    if (tgt.classList.contains("quantity-change")) {
-      var qtyChange = parseInt(tgt.dataset.change);
-      var newQty =
-        parseInt(itemElem.querySelector("span").textContent.split("x ")[1]) +
-        qtyChange;
+    if (target.classList.contains("quantity-change")) {
+      const quantityChange = parseInt(target.dataset.change);
+      const newQuantity =
+        parseInt(itemElement.querySelector("span").textContent.split("x ")[1]) +
+        quantityChange;
       if (
-        newQty > 0 &&
-        newQty <=
-          prod.q +
-            parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
+        newQuantity > 0 &&
+        newQuantity <=
+          product.q +
+            parseInt(
+              itemElement.querySelector("span").textContent.split("x ")[1]
+            )
       ) {
-        itemElem.querySelector("span").textContent =
-          itemElem.querySelector("span").textContent.split("x ")[0] +
+        itemElement.querySelector("span").textContent =
+          itemElement.querySelector("span").textContent.split("x ")[0] +
           "x " +
-          newQty;
-        prod.q -= qtyChange;
-      } else if (newQty <= 0) {
-        itemElem.remove();
-        prod.q -= qtyChange;
+          newQuantity;
+        product.q -= quantityChange;
+      } else if (newQuantity <= 0) {
+        itemElement.remove();
+        product.q -= quantityChange;
       } else {
         alert(MESSAGES.OUT_STOCK);
       }
-    } else if (tgt.classList.contains("remove-item")) {
-      var remQty = parseInt(
-        itemElem.querySelector("span").textContent.split("x ")[1]
+    } else if (target.classList.contains("remove-item")) {
+      const removeQuantity = parseInt(
+        itemElement.querySelector("span").textContent.split("x ")[1]
       );
-      prod.q += remQty;
-      itemElem.remove();
+      product.q += removeQuantity;
+      itemElement.remove();
     }
     calcCart();
   }
