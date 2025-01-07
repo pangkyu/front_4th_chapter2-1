@@ -2,43 +2,43 @@ import { productList } from "./constants/list";
 import { NUMBERS, SALE_NUMBERS } from "./constants/magicNumbers";
 import { MESSAGES, SYMBOL } from "./constants/messages";
 
-var sel, addBtn, cartDisp, sum, stockInfo;
-var lastSel,
-  bonusPts = 0,
-  totalAmt = 0,
-  itemCnt = 0;
+var select, addButton, cartDisplay, sum, stockInfo;
+var lastSelect,
+  bonusPoints = 0,
+  totalAmount = 0,
+  itemCount = 0;
 
 function main() {
   const root = document.getElementById("app");
   let cont = document.createElement("div");
   const wrap = document.createElement("div");
   let hTxt = document.createElement("h1");
-  cartDisp = document.createElement("div");
+  cartDisplay = document.createElement("div");
   sum = document.createElement("div");
-  sel = document.createElement("select");
-  addBtn = document.createElement("button");
+  select = document.createElement("select");
+  addButton = document.createElement("button");
   stockInfo = document.createElement("div");
-  cartDisp.id = "cart-items";
+  cartDisplay.id = "cart-items";
   sum.id = "cart-total";
-  sel.id = "product-select";
-  addBtn.id = "add-to-cart";
+  select.id = "product-select";
+  addButton.id = "add-to-cart";
   stockInfo.id = "stock-status";
   cont.className = "bg-gray-100 p-8";
   wrap.className =
     "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
   hTxt.className = "text-2xl font-bold mb-4";
   sum.className = "text-xl font-bold my-4";
-  sel.className = "border rounded p-2 mr-2";
-  addBtn.className = "bg-blue-500 text-white px-4 py-2 rounded";
+  select.className = "border rounded p-2 mr-2";
+  addButton.className = "bg-blue-500 text-white px-4 py-2 rounded";
   stockInfo.className = "text-sm text-gray-500 mt-2";
   hTxt.textContent = MESSAGES.SHOPPING_BASKET;
-  addBtn.textContent = MESSAGES.ADD;
+  addButton.textContent = MESSAGES.ADD;
   updateSelOpts();
   wrap.appendChild(hTxt);
-  wrap.appendChild(cartDisp);
+  wrap.appendChild(cartDisplay);
   wrap.appendChild(sum);
-  wrap.appendChild(sel);
-  wrap.appendChild(addBtn);
+  wrap.appendChild(select);
+  wrap.appendChild(addButton);
   wrap.appendChild(stockInfo);
   cont.appendChild(wrap);
   root.appendChild(cont);
@@ -56,9 +56,9 @@ function main() {
   }, Math.random() * SALE_NUMBERS.LIGHTNING_DELAY);
   setTimeout(function () {
     setInterval(function () {
-      if (lastSel) {
+      if (lastSelect) {
         const suggest = productList.find(function (item) {
-          return item.id !== lastSel && item.q > 0;
+          return item.id !== lastSelect && item.q > 0;
         });
         if (suggest) {
           alert(MESSAGES.SUGGESTION_SALE(suggest.name));
@@ -71,20 +71,20 @@ function main() {
 }
 
 function updateSelOpts() {
-  sel.innerHTML = "";
+  select.innerHTML = "";
   productList.forEach(function (item) {
     const option = document.createElement("option");
     option.value = item.id;
     option.textContent =
       item.name + ` ${SYMBOL.HYPHEN_MINUS} ` + item.val + MESSAGES.WON;
     if (item.q === 0) option.disabled = true;
-    sel.appendChild(option);
+    select.appendChild(option);
   });
 }
 function calcCart() {
-  totalAmt = 0;
-  itemCnt = 0;
-  const cartItems = cartDisp.children;
+  totalAmount = 0;
+  itemCount = 0;
+  const cartItems = cartDisplay.children;
   let subTot = 0;
   for (let i = 0; i < cartItems.length; i++) {
     (function () {
@@ -100,7 +100,7 @@ function calcCart() {
       );
       const itemTotal = curItem.val * q;
       let disc = 0;
-      itemCnt += q;
+      itemCount += q;
       subTot += itemTotal;
       if (q >= 10) {
         if (curItem.id === "p1") disc = 0.1;
@@ -109,28 +109,30 @@ function calcCart() {
         else if (curItem.id === "p4") disc = 0.05;
         else if (curItem.id === "p5") disc = 0.25;
       }
-      totalAmt += itemTotal * (1 - disc);
+      totalAmount += itemTotal * (1 - disc);
     })();
   }
   let discRate = 0;
-  if (itemCnt >= 30) {
-    var bulkDisc = totalAmt * 0.25;
-    var itemDisc = subTot - totalAmt;
+  if (itemCount >= 30) {
+    var bulkDisc = totalAmount * 0.25;
+    var itemDisc = subTot - totalAmount;
     if (bulkDisc > itemDisc) {
-      totalAmt = subTot * (1 - 0.25);
+      totalAmount = subTot * (1 - 0.25);
       discRate = 0.25;
     } else {
-      discRate = (subTot - totalAmt) / subTot;
+      discRate = (subTot - totalAmount) / subTot;
     }
   } else {
-    discRate = (subTot - totalAmt) / subTot;
+    discRate = (subTot - totalAmount) / subTot;
   }
   if (new Date().getDay() === 2) {
-    totalAmt *= 1 - 0.1;
+    totalAmount *= 1 - 0.1;
     discRate = Math.max(discRate, 0.1);
   }
   sum.textContent =
-    `${MESSAGES.AMOUNT + SYMBOL.COLON} ` + Math.round(totalAmt) + MESSAGES.WON;
+    `${MESSAGES.AMOUNT + SYMBOL.COLON} ` +
+    Math.round(totalAmount) +
+    MESSAGES.WON;
   if (discRate > NUMBERS.ZERO) {
     var span = document.createElement("span");
     span.className = "text-green-500 ml-2";
@@ -140,10 +142,10 @@ function calcCart() {
     sum.appendChild(span);
   }
   updateStockInfo();
-  renderBonusPts();
+  renderBonusPoints();
 }
-const renderBonusPts = () => {
-  bonusPts = Math.floor(totalAmt / NUMBERS.THOUSAND);
+const renderBonusPoints = () => {
+  bonusPoints = Math.floor(totalAmount / NUMBERS.THOUSAND);
   let pointsTag = document.getElementById("loyalty-points");
   if (!pointsTag) {
     pointsTag = document.createElement("span");
@@ -151,7 +153,7 @@ const renderBonusPts = () => {
     pointsTag.className = "text-blue-500 ml-2";
     sum.appendChild(pointsTag);
   }
-  pointsTag.textContent = MESSAGES.BONUS_POINT(bonusPts);
+  pointsTag.textContent = MESSAGES.BONUS_POINT(bonusPoints);
 };
 function updateStockInfo() {
   let infoMessage = "";
@@ -167,8 +169,8 @@ function updateStockInfo() {
   stockInfo.textContent = infoMessage;
 }
 main();
-addBtn.addEventListener("click", function () {
-  const selectItem = sel.value;
+addButton.addEventListener("click", function () {
+  const selectItem = select.value;
   const itemToAdd = productList.find(function (p) {
     return p.id === selectItem;
   });
@@ -207,14 +209,14 @@ addBtn.addEventListener("click", function () {
         '<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="' +
         itemToAdd.id +
         '">삭제</button></div>';
-      cartDisp.appendChild(newItem);
+      cartDisplay.appendChild(newItem);
       itemToAdd.q--;
     }
     calcCart();
-    lastSel = selectItem;
+    lastSelect = selectItem;
   }
 });
-cartDisp.addEventListener("click", function (event) {
+cartDisplay.addEventListener("click", function (event) {
   const target = event.target;
   if (
     target.classList.contains("quantity-change") ||
