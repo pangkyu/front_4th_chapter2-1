@@ -1,5 +1,5 @@
 import { productList } from "./constants/list";
-import { NUMBERS } from "./constants/magicNumbers";
+import { NUMBERS, SALE_NUMBERS } from "./constants/magicNumbers";
 import { MESSAGES, SYMBOL } from "./constants/messages";
 
 var sel, addBtn, cartDisp, sum, stockInfo;
@@ -52,8 +52,8 @@ function main() {
         alert(MESSAGES.LIGHTNING_SALE(luckyItem.name));
         updateSelOpts();
       }
-    }, 30000);
-  }, Math.random() * 10000);
+    }, SALE_NUMBERS.LIGHTNING_INTERVAL);
+  }, Math.random() * SALE_NUMBERS.LIGHTNING_DELAY);
   setTimeout(function () {
     setInterval(function () {
       if (lastSel) {
@@ -66,8 +66,8 @@ function main() {
           updateSelOpts();
         }
       }
-    }, 60000);
-  }, Math.random() * 20000);
+    }, SALE_NUMBERS.SUGGESTION_SALE);
+  }, Math.random() * SALE_NUMBERS.SUGGESTION_DELAY);
 }
 
 function updateSelOpts() {
